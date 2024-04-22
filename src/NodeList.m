@@ -9,8 +9,8 @@ classdef NodeList < handle
     end
 
     %* ----- ACCESSOR ----- *%
-    function nodes = getNodes(obj)
-      nodes = obj.nodes;
+    function all_nodes = getNodes(obj)
+      all_nodes = obj.nodes;
     end
     
     function num_nodes = len(obj)
@@ -25,6 +25,7 @@ classdef NodeList < handle
         y (1,1) double
       end
       n = Node(x,y);
+      % obj.len
       obj.nodes = [obj.nodes, n];
     end
   end

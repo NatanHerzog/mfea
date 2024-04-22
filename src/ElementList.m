@@ -1,5 +1,5 @@
 classdef ElementList < handle
-  properties
+  properties (GetAccess = private, SetAccess = private)
     elements (1,:) Element
   end
 

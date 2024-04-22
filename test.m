@@ -3,13 +3,7 @@ clc
 
 addpath('src')
 
-nl = NodeList();
-nl.addNode(0,0);
-nl.addNode(1,1);
-nl.addNode(2,1);
-
-el = ElementList();
-el.addElement(1,2);
-el.addElement(2,3);
-
-K_1 = el.getStiffness(nl)
+S = System(1,1,1);
+S.addNode(0,0); S.addNode(1,1); S.addNode(2,1);
+S.addElement(1,2); S.addElement(2,3);
+S.getStiffness
