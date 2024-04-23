@@ -47,14 +47,17 @@ classdef Element < handle
       l = sqrt((x_n2 - x_n1)^2 + (y_n2 - y_n1)^2);
     end
 
-    function K = getElementStiffness(obj, nodes_list)
+    function K = getElementStiffness(obj, nodes_list, num_dof)
       arguments
         obj Element
         nodes_list NodeList
+        num_dof (1,1) int8
       end
       L = obj.getElementLength(nodes_list);
-      switch obj.getOrder
-        case ElementOrder.LINEAR
+      switch num_dof
+        case 2
+          K = 1 / L * [1, -1; -1, 1];
+        case 3
           K = 1 / (60 * L) * [36,   3*L,  -36,   3*L;...
                               3*L, 4*L^2, -3*L,  -L^2;...
                               -36,  -3*L,   36,  -3*L;...
@@ -62,17 +65,24 @@ classdef Element < handle
       end
     end
 
-    function T = getElementTransformation(obj, nodes_list)
+    function T = getElementTransformation(obj, nodes_list, num_dof)
       arguments
         obj Element
         nodes_list NodeList
+        num_dof (1,1) int8
       end
       [x_n1, y_n1, x_n2, y_n2] = obj.getNodalLocations(nodes_list);
       theta = atan((y_n2 - y_n1)/(x_n2 - x_n1));
-      T = [cos(theta), sin(theta), 0, 0, 0, 0;...
-           0, 0, 1, 0, 0, 0;...
-           0, 0, 0, cos(theta), sin(theta), 0;...
-           0, 0, 0, 0, 0, 1];
+      switch num_dof
+        case 2
+          T = [cos(theta), sin(theta), 0, 0;...
+            0, 0, cos(theta), sin(theta)];
+        case 3
+          T = [cos(theta), sin(theta), 0, 0, 0, 0;...
+            0, 0, 1, 0, 0, 0;...
+            0, 0, 0, cos(theta), sin(theta), 0;...
+            0, 0, 0, 0, 0, 1];
+      end
     end
 
     %* ----- SETTER METHODS ----- *%

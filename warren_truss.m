@@ -1,6 +1,6 @@
 clear all
 close all
-% clc
+clc
 
 l = 10;   %! [m]
 E = 1;  %! [N/m^2]
@@ -9,7 +9,7 @@ A = 1;    %! [m^2]
 MESH_SIZE = 0.33; %! [m]
 F = 1;  %! [N]
 
-S = System(E,I,A);
+S = System(E,I,A,2);
 
 S.addNode(0,0);
 S.addNode(l,0);
@@ -27,10 +27,12 @@ S.addElement(4,5);
 
 S.xDisplacementCondition([0,0]);
 S.yDisplacementCondition([0,0]);
+S.xDisplacementCondition([2*l,0]);
 S.yDisplacementCondition([2*l,0]);
 
 S.yNodalForce([l,0],-F);
 
+S.K
 S.setStiffnessAndLoads;
 S.getStiffness
 S.getNodalLoads

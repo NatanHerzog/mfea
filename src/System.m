@@ -3,6 +3,8 @@ classdef System < handle
     nodes (1,1) NodeList
     elems (1,1) ElementList
 
+    NUM_DOF (1,1) int8
+
     YOUNGS_MODULUS (1,1) double
     SECOND_MOMENT_OF_AREA (1,1) double
     CROSS_SECTIONAL_AREA (1,1) double
@@ -20,15 +22,17 @@ classdef System < handle
   end
 
   methods
-    function obj = System(E,I,A)
+    function obj = System(E,I,A,N)
       arguments
         E (1,1) double
         I (1,1) double
         A (1,1) double
+        N (1,1) int8
       end
       obj.YOUNGS_MODULUS = E;
       obj.SECOND_MOMENT_OF_AREA = I;
       obj.CROSS_SECTIONAL_AREA = A;
+      obj.NUM_DOF = N;
     end
 
     %* ----- ACCESSOR METHODS ----- *%
@@ -48,10 +52,13 @@ classdef System < handle
     function A = A(obj)
       A = obj.CROSS_SECTIONAL_AREA;
     end
+    function N = N(obj)
+      N = obj.NUM_DOF;
+    end
 
     function K = K(obj)
       el = obj.getElementList;
-      K = (obj.E * obj.I) * el.getStiffness(obj.getNodeList);
+      K = (obj.E * obj.A) * el.getOverallStiffness(obj.getNodeList, obj.N);
     end
     function K = getStiffness(obj)
       K = obj.STIFFNESS_MATRIX;
@@ -98,7 +105,7 @@ classdef System < handle
       for j=1:length(x_index)
         shared_index = find(x_index(j) == y_index);
       end
-      index = (y_index(shared_index)-1)*3+1;
+      index = (y_index(shared_index)-1)*obj.N+1;
     end
     function obj = xDisplacementCondition(obj, loc)
       arguments
@@ -120,6 +127,9 @@ classdef System < handle
       arguments
         obj System
         loc (1,2) double
+      end
+      if obj.N ~= 3
+        throw("this system is not defined with rotational degrees of freedom");
       end
       shared_index = findSharedIndex(obj, loc)+2;
       obj.r_boundaries = [obj.r_boundaries, shared_index];
@@ -149,6 +159,9 @@ classdef System < handle
         obj System
         loc (1,2) double
         M (1,1) double
+      end
+      if obj.N ~= 3
+        throw("this system is not defined with rotational degrees of freedom");
       end
       shared_index = findSharedIndex(obj, loc)+2;
       obj.moments = [obj.moments; [shared_index, M]];
