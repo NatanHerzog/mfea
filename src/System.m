@@ -58,7 +58,12 @@ classdef System < handle
 
     function K = K(obj)
       el = obj.getElementList;
-      K = (obj.E * obj.A) * el.getOverallStiffness(obj.getNodeList, obj.N);
+      switch obj.N
+        case 2
+          K = (obj.E * obj.A) * el.getOverallStiffness(obj.getNodeList, 2);
+        case 3
+          K = (obj.E * obj.I * obj.A) * el.getOverallStiffness(obj.getNodeList, 3);
+      end
     end
     function K = getStiffness(obj)
       K = obj.STIFFNESS_MATRIX;
