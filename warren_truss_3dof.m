@@ -2,14 +2,16 @@ clear all
 close all
 clc
 
+addpath('src')
+
 l = 10;   %! [m]
-E = 1;  %! [N/m^2]
+E = 1e9;  %! [N/m^2]
 I = 1; %! [m^4]
 A = 1;    %! [m^2]
 MESH_SIZE = 0.33; %! [m]
-F = 1;  %! [N]
+F = 1e4;  %! [N]
 
-S = System(E,I,A,2);
+S = System(E,I,A,3);
 
 S.addNode(0,0);
 S.addNode(l,0);

@@ -63,6 +63,11 @@ classdef System < handle
           K = (obj.E * obj.A) * el.getOverallStiffness(obj.getNodeList, 2);
         case 3
           K = (obj.E * obj.I * obj.A) * el.getOverallStiffness(obj.getNodeList, 3);
+          tension_indices = 1:3:size(K,1)-2;
+          all_indices = 1:size(K,1);
+          bending_indices = all_indices(~tension_indices);
+          K(tension_indices) = K(tension_indices) .* obj.E * obj.A;
+          K(bending_indices) = K(bending_indices) .* obj.E * obj.I;
       end
     end
     function K = getStiffness(obj)
