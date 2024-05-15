@@ -17,9 +17,12 @@ NUM_DOF = 2;
 
 one_horizontal_element = System(YOUNGS_MODULUS, SECOND_MOMENT, AREA, NUM_DOF);
 
-one_horizontal_element.addNode(0,0);
-one_horizontal_element.addNode(1,0);
-one_horizontal_element.addElement(1,2);
+origin = Node(0,0);
+horizontal = Node(1,0);
+el = Element(origin, horizontal);
+one_horizontal_element.addNode(origin);
+one_horizontal_element.addNode(horizontal);
+one_horizontal_element.addElement(el);
 one_horizontal_element.xDisplacementCondition([0,0]);
 one_horizontal_element.yDisplacementCondition([0,0]);
 one_horizontal_element.yDisplacementCondition([1,0]);
