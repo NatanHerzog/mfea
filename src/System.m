@@ -181,7 +181,7 @@ classdef System < handle
     function obj = setStiffnessAndLoads(obj)
       K = obj.K;
       obj.setLoads;
-      obj.NODAL_LOADS
+      obj.NODAL_LOADS;
       for i=1:length(obj.x_boundaries)
         index = obj.x_boundaries(i);
         K(index,:) = []; K(:,index) = [];
