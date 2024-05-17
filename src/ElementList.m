@@ -1,6 +1,7 @@
 classdef ElementList < handle
   properties (GetAccess = private, SetAccess = private)
     elements (1,:) Element
+    nodes_list (1,1) NodeList
   end
 
   methods
@@ -8,9 +9,21 @@ classdef ElementList < handle
     function obj = ElementList(~)
     end
 
+    %* ----- LINK TO NODES ----- *%
+    function linkToNodes(obj, nl)
+      arguments
+        obj ElementList
+        nl (1,1) NodeList
+      end
+      obj.nodes_list = nl;
+    end
+
     %* ----- ACCESSOR ----- *%
     function elements = getElements(obj)
       elements = obj.elements;
+    end
+    function nodes_list = getNodesList(obj)
+      nodes_list = obj.nodes_list;
     end
 
     function num_elem = len(obj)
@@ -18,7 +31,7 @@ classdef ElementList < handle
     end
 
     %* ----- ADD ELEMENT TO LIST ----- *%
-    function addElement(obj, n1, n2)
+    function addElementByNodes(obj, n1, n2)
       arguments
         obj ElementList
         n1 (1,1) Node
@@ -27,19 +40,36 @@ classdef ElementList < handle
       e = Element(n1,n2);
       obj.elements = [obj.getElements, e];
     end
+    function addElementByIndices(obj, index_n1, index_n2)
+      arguments
+        obj ElementList
+        index_n1 (1,1) uint64
+        index_n2 (1,1) uint64
+      end
+      nl = obj.getNodesList; nodes = nl.getNodes;
+      obj.addElementByNodes(nodes(index_n1), nodes(index_n2));
+    end
 
     %* ----- GET STIFFNESS MATRIX ----- *%
+    function stiffness_indices = nodeListIndexToStiffnessIndices(node_list_index)
+      stiffness_index = (node_list_index - 1) * 3 + 1;
+      stiffness_indices = stiffness_index:stiffness_index+2;
+    end
+
     function K = getOverallStiffness(obj)
-      elements_list = obj.getElements;
-      K = zeros(nodes_list.len*3);
-      for i=1:obj.len
-        e1_i = (elements_list(i).getNodeOne-1)*num_dof+1;
-        e2_i = (elements_list(i).getNodeTwo-1)*num_dof+1;
-        indices = [e1_i:e1_i+num_dof-1,...
-                   e2_i:e2_i+num_dof-1];
-        element_stiffness = elements_list(i).getElementStiffness;
-        element_transform = elements_list(i).getElementTransformation;
-        K(indices,indices) = K(indices,indices) + (transpose(element_transform) * element_stiffness * element_transform);
+      node_list = obj.getNodesList;
+      nodes = node_list.getNodes;
+      all_elements = obj.getElements;
+
+      K = zeros(length(nodes) * 3);
+      for element_index = 1 : length(all_elements)
+        current_element = all_elements(element_index);
+        current_element_nodes = current_element.getEndpoints;
+        index_n1_in_node_list = find(nodes, current_element_nodes(1));
+        index_n2_in_node_list = find(nodes, current_element_nodes(2));
+        all_stiffness_indices = [nodeListIndexToStiffnessIndices(index_n1_in_node_list),...
+                                 nodeListIndexToStiffnessIndices(index_n2_in_node_list)];
+        K(all_stiffness_indices, all_stiffness_indices) = current_element.getElementTransformation * current_element.getElementStiffness;
       end
     end
   end

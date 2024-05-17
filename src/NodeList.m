@@ -18,7 +18,7 @@ classdef NodeList < handle
     end
 
     %* ----- ADD NODES TO LIST ----- *%
-    function addNode(obj, x, y)
+    function addNodeByLoc(obj, x, y)
       arguments
         obj NodeList
         x (1,1) double
@@ -26,6 +26,13 @@ classdef NodeList < handle
       end
       n = Node(x,y);
       % obj.len
+      obj.nodes = [obj.nodes, n];
+    end
+    function addNodeByNode(obj, n)
+      arguments
+        obj NodeList
+        n (1,1) Node
+      end
       obj.nodes = [obj.nodes, n];
     end
   end
