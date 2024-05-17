@@ -22,7 +22,11 @@ classdef ElementList < handle
     function elements = getElements(obj)
       elements = obj.elements;
     end
-    function nodes_list = getNodesList(obj)
+    function element = getElementByIndex(obj, index)
+      element_array = obj.getElements;
+      element = element_array(index);
+    end
+    function nodes_list = getNodeList(obj)
       nodes_list = obj.nodes_list;
     end
 
@@ -46,7 +50,7 @@ classdef ElementList < handle
         index_n1 (1,1) uint64
         index_n2 (1,1) uint64
       end
-      nl = obj.getNodesList; nodes = nl.getNodes;
+      nl = obj.getNodeList; nodes = nl.getNodes;
       obj.addElementByNodes(nodes(index_n1), nodes(index_n2));
     end
 
@@ -57,13 +61,12 @@ classdef ElementList < handle
     end
 
     function K = getOverallStiffness(obj)
-      node_list = obj.getNodesList;
+      node_list = obj.getNodeList;
       nodes = node_list.getNodes;
-      all_elements = obj.getElements;
 
       K = zeros(length(nodes) * 3);
       for element_index = 1 : length(all_elements)
-        current_element = all_elements(element_index);
+        current_element = obj.getElementByIndex(element_index);
         current_element_nodes = current_element.getEndpoints;
         index_n1_in_node_list = find(nodes, current_element_nodes(1));
         index_n2_in_node_list = find(nodes, current_element_nodes(2));
