@@ -2,11 +2,24 @@ classdef ElementList < handle
   properties (GetAccess = private, SetAccess = private)
     elements (1,:) Element
     nodes_list (1,1) NodeList
+    stiffness_matrix (:,:) double
+
+    CROSS_SECTIONAL_AREA (1,1) double = 1;
+    SECOND_MOMENT_OF_AREA (1,1) double = 1;
+    YOUNGS_MODULUS (1,1) double = 1;
   end
 
   methods
     %* ----- ELEMENT LIST CONSTRUCTOR ----- *%
-    function obj = ElementList(~)
+    function obj = ElementList(A, I, E)
+      arguments
+        A (1,1) double
+        I (1,1) double
+        E (1,1) double
+      end
+      obj.CROSS_SECTIONAL_AREA = A;
+      obj.SECOND_MOMENT_OF_AREA = I;
+      obj.YOUNGS_MODULUS = E;
     end
 
     %* ----- LINK TO NODES ----- *%
@@ -19,11 +32,11 @@ classdef ElementList < handle
     end
 
     %* ----- ACCESSOR ----- *%
-    function elements = getElements(obj)
+    function elements = getElementList(obj)
       elements = obj.elements;
     end
     function element = getElementByIndex(obj, index)
-      element_array = obj.getElements;
+      element_array = obj.getElementList;
       element = element_array(index);
     end
     function nodes_list = getNodeList(obj)
@@ -31,7 +44,10 @@ classdef ElementList < handle
     end
 
     function num_elem = len(obj)
-      num_elem = length(obj.getElements);
+      num_elem = length(obj.getElementList);
+    end
+    function K = getStiffnessMatrix(obj)
+      K = obj.stiffness_matrix;
     end
 
     %* ----- ADD ELEMENT TO LIST ----- *%
@@ -41,8 +57,9 @@ classdef ElementList < handle
         n1 (1,1) Node
         n2 (1,1) Node
       end
-      e = Element(n1,n2);
-      obj.elements = [obj.getElements, e];
+      e = Element;
+      e.setNodes(n1,n2);
+      obj.elements = [obj.getElementList, e];
     end
     function addElementByIndices(obj, index_n1, index_n2)
       arguments
@@ -54,26 +71,65 @@ classdef ElementList < handle
       obj.addElementByNodes(nodes(index_n1), nodes(index_n2));
     end
 
-    %* ----- GET STIFFNESS MATRIX ----- *%
-    function stiffness_indices = nodeListIndexToStiffnessIndices(node_list_index)
-      stiffness_index = (node_list_index - 1) * 3 + 1;
-      stiffness_indices = stiffness_index:stiffness_index+2;
+    %* ----- SET ELEMENT PROPERTIES IN BULK ----- *%
+    function setMaterialPropertiesInBulk(obj)
+      obj.setCrossSectionalArea(obj.CROSS_SECTIONAL_AREA);
+      obj.setSecondMoment(obj.SECOND_MOMENT_OF_AREA);
+      obj.setYoungsModulus(obj.YOUNGS_MODULUS);
+    end
+    function setCrossSectionalArea(obj, A)
+      arguments
+        obj ElementList
+        A (1,1) double
+      end
+      elementlist = obj.getElementList;
+      for element_index = 1 : obj.len
+        elementlist(element_index).setCrossSectionalArea(A);
+      end
+    end
+    function setSecondMoment(obj, I)
+      arguments
+        obj ElementList
+        I (1,1) double
+      end
+      elementlist = obj.getElementList;
+      for element_index = 1 : obj.len
+        elementlist(element_index).setSecondMoment(I);
+      end
+    end
+    function setYoungsModulus(obj, E)
+      arguments
+        obj ElementList
+        E (1,1) double
+      end
+      elementlist = obj.getElementList;
+      for element_index = 1 : obj.len
+        elementlist(element_index).setYoungsModulus(E);
+      end
     end
 
-    function K = getOverallStiffness(obj)
+    %* ----- STORE STIFFNESS MATRIX ----- *%
+    function K = calculateOverallStiffness(obj)
       node_list = obj.getNodeList;
       nodes = node_list.getNodes;
 
       K = zeros(length(nodes) * 3);
-      for element_index = 1 : length(all_elements)
+      for element_index = 1 : obj.len
         current_element = obj.getElementByIndex(element_index);
-        current_element_nodes = current_element.getEndpoints;
-        index_n1_in_node_list = find(nodes, current_element_nodes(1));
-        index_n2_in_node_list = find(nodes, current_element_nodes(2));
+        current_element_nodes = [current_element.getNodeOne, current_element.getNodeTwo];
+        index_n1_in_node_list = find(nodes == current_element_nodes(1));
+        index_n2_in_node_list = find(nodes == current_element_nodes(2));
         all_stiffness_indices = [nodeListIndexToStiffnessIndices(index_n1_in_node_list),...
                                  nodeListIndexToStiffnessIndices(index_n2_in_node_list)];
-        K(all_stiffness_indices, all_stiffness_indices) = current_element.getElementTransformation * current_element.getElementStiffness;
+        K(all_stiffness_indices, all_stiffness_indices) = ...
+          current_element.getElementTransformation * current_element.getElementStiffness * transpose(current_element.getElementTransformation);
       end
+      obj.stiffness_matrix = K;
     end
   end
+end
+
+function stiffness_indices = nodeListIndexToStiffnessIndices(node_list_index)
+  stiffness_index = (node_list_index - 1) * 3 + 1;
+  stiffness_indices = stiffness_index : stiffness_index + 2;
 end

@@ -1,7 +1,7 @@
 classdef Element < handle
   properties (GetAccess = private, SetAccess = private)
-    n1 (1,1) Node
-    n2 (1,1) Node
+    n1 (1,1) Node = Node(0,0)
+    n2 (1,1) Node = Node(0,0)
     YOUNGS_MODULUS (1,1) double = 1
     SECOND_MOMENT (1,1) double = 1
     CROSS_SECTIONAL_AREA (1,1) double = 1
@@ -9,13 +9,7 @@ classdef Element < handle
 
   methods
     %* ----- ELEMENT CONSTRUCTOR ----- *%
-    function obj = Element(n1,n2)
-      arguments
-        n1 (1,1) Node
-        n2 (1,1) Node
-      end
-      obj.n1 = n1;
-      obj.n2 = n2;
+    function obj = Element(~)
     end
 
     %* ----- ACCESSOR METHODS ----- *%
@@ -36,13 +30,34 @@ classdef Element < handle
     end
 
     %* ----- SETTER METHODS ----- *%
+    function setNodes(obj, n1, n2)
+      arguments
+        obj Element
+        n1 Node
+        n2 Node
+      end
+      obj.n1 = n1;
+      obj.n2 = n2;
+    end
     function setYoungsModulus(obj, E)
+      arguments
+        obj Element
+        E (1,1) double
+      end
       obj.YOUNGS_MODULUS = E;
     end
     function setSecondMoment(obj, I)
+      arguments
+        obj Element
+        I (1,1) double
+      end
       obj.SECOND_MOMENT = I;
     end
     function setCrossSectionalArea(obj, A)
+      arguments
+        obj Element
+        A (1,1) double
+      end
       obj.CROSS_SECTIONAL_AREA = A;
     end
 
@@ -76,10 +91,10 @@ classdef Element < handle
       endpoints = obj.getEndpoints;
       theta = atan((endpoints(2,2) - endpoints(1,2))/(endpoints(2,1) - endpoints(1,1)));
       %*   ax1            perp1           bend1     ax2             perp2           bend2
-      T = [cos(theta),    sin(theta),     0,        0,              0,              0;...
+      T = [cos(theta),    -sin(theta),    0,        0,              0,              0;...
            sin(theta),    cos(theta),     0,        0,              0,              0;...
            0,             0,              1,        0,              0,              0;...
-           0,             0,              0,        cos(theta),     sin(theta),     0;...
+           0,             0,              0,        cos(theta),     -sin(theta),    0;...
            0,             0,              0,        sin(theta),     cos(theta),     0;...
            0,             0,              0,        0,              0,              1];
     end

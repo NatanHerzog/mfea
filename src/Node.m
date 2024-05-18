@@ -1,7 +1,7 @@
 classdef Node < handle
   properties (GetAccess = private, SetAccess = private)
-    x (1,1) double;
-    y (1,1) double;
+    x (1,1) double = 0;
+    y (1,1) double = 0;
   end
 
   methods
