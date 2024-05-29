@@ -9,12 +9,15 @@ classdef NodeList < handle
     end
 
     %* ----- ACCESSOR ----- *%
-    function all_nodes = getNodes(obj)
+    function all_nodes = getAllNodes(obj)
       all_nodes = obj.nodes;
+    end
+    function node = getNode(obj, index)
+      node = obj.nodes(index);
     end
     
     function num_nodes = len(obj)
-      num_nodes = length(obj.getNodes);
+      num_nodes = length(obj.getAllNodes);
     end
 
     %* ----- ADD NODES TO LIST ----- *%

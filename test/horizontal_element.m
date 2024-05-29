@@ -21,3 +21,7 @@ elementlist.addElementByIndices(1,2);
 elementlist.setMaterialPropertiesInBulk;
 elementlist.calculateOverallStiffness;
 elementlist.getStiffnessMatrix
+
+system = System(elementlist);
+displacement_condition_left = DisplacementCondition(nodelist.getNode(1), [0,0,0]);
+load_condition_right = LoadCondition(nodelist.getNode(2), [1,0,0]);

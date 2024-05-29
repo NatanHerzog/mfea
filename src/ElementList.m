@@ -67,7 +67,7 @@ classdef ElementList < handle
         index_n1 (1,1) uint64
         index_n2 (1,1) uint64
       end
-      nl = obj.getNodeList; nodes = nl.getNodes;
+      nl = obj.getNodeList; nodes = nl.getAllNodes;
       obj.addElementByNodes(nodes(index_n1), nodes(index_n2));
     end
 
@@ -111,7 +111,7 @@ classdef ElementList < handle
     %* ----- STORE STIFFNESS MATRIX ----- *%
     function K = calculateOverallStiffness(obj)
       node_list = obj.getNodeList;
-      nodes = node_list.getNodes;
+      nodes = node_list.getAllNodes;
 
       K = zeros(length(nodes) * 3);
       for element_index = 1 : obj.len

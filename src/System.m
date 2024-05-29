@@ -29,5 +29,25 @@ classdef System < handle
       end
       obj.displacements = [obj.displacements, displacement];
     end
+
+    function loads = getLoads(obj)
+      loads = obj.loads;
+    end
+    function displacements = getDisplacements(obj)
+      displacements = obj.displacements;
+    end
+
+    %* ----- GET STIFFNESS MATRIX ----- *%
+    function stiffness_matrix = getSystemStiffness(obj)
+      stiffness_matrix = obj.element_list.getStiffnessMatrix;
+      displacements = obj.getDisplacements;
+      if ~isempty(displacements)
+        for displacements_index=1:length(displacements)
+          current_displacement_condition = displacements(displacements_index);
+        end
+      else
+        throw(MEexception('system is not constrained, will result in rigid-body motion'));
+      end
+    end
   end
 end
