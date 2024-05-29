@@ -55,10 +55,12 @@ classdef System < handle
           stiffness_matrix(:, full_matrix_index) = [];
 
           remove_node = true;
-          for remaining_displacements_index = displacements_index+1:length(all_displacements)
-            checked_displacement = all_displacements(remaining_displacements_index);
-            if applied_node == checked_displacement.getNode
-              remove_node = false;
+          if ~(displacements_index == length(all_displacements))
+            for remaining_displacements_index = displacements_index+1:length(all_displacements)
+              checked_displacement = all_displacements(remaining_displacements_index);
+              if applied_node == checked_displacement.getNode
+                remove_node = false;
+              end
             end
           end
           if remove_node
