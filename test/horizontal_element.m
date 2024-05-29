@@ -23,5 +23,13 @@ elementlist.calculateOverallStiffness;
 elementlist.getStiffnessMatrix
 
 system = System(elementlist);
-displacement_condition_left = DisplacementCondition(nodelist.getNode(1), [0,0,0]);
+constrain_x_displacement_left = DisplacementCondition(nodelist.getNode(1), 0, Direction.XTRANSLATION);
+constrain_y_displacement_left= DisplacementCondition(nodelist.getNode(1), 0, Direction.YTRANSLATION);
+constrain_z_rotation_left= DisplacementCondition(nodelist.getNode(1), 0, Direction.ZROTATION);
+system.addDisplacement(constrain_x_displacement_left);
+system.addDisplacement(constrain_y_displacement_left);
+system.addDisplacement(constrain_z_rotation_left);
+
 load_condition_right = LoadCondition(nodelist.getNode(2), [1,0,0]);
+
+system.getSystemStiffness

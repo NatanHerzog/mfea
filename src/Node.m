@@ -6,13 +6,7 @@ classdef Node < handle
 
   methods
     %* ----- NODE CONSTRUCTOR ----- *%
-    function obj = Node(x,y)
-      arguments
-        x (1,1) double
-        y (1,1) double
-      end
-      obj.x = x;
-      obj.y = y;
+    function obj = Node(~)
     end
 
     %* ----- ACCESS METHODS ----- *%

@@ -13,7 +13,8 @@ classdef NodeList < handle
       all_nodes = obj.nodes;
     end
     function node = getNode(obj, index)
-      node = obj.nodes(index);
+      node_list = obj.nodes;
+      node = node_list(index);
     end
     
     function num_nodes = len(obj)
@@ -27,8 +28,9 @@ classdef NodeList < handle
         x (1,1) double
         y (1,1) double
       end
-      n = Node(x,y);
-      % obj.len
+      n = Node;
+      n.setX(x)
+      n.setY(y);
       obj.nodes = [obj.nodes, n];
     end
     function addNodeByNode(obj, n)

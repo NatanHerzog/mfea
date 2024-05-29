@@ -1,25 +1,31 @@
 classdef DisplacementCondition < handle
   properties (GetAccess = private, SetAccess = private)
     node (1,1) Node
-    displacement_vector (1,3) double
+    displacement (1,1) double
+    direction Direction
   end
 
   methods
     %* ----- CLASS CONSTRUCTOR ----- *%
-    function obj = DisplacementCondition(node, displacement_vector)
+    function obj = DisplacementCondition(node, displacement, direction)
       arguments
         node (1,1) Node
-        displacement_vector (1,3) double
+        displacement (1,1) double
+        direction Direction
       end
       obj.node = node;
-      obj.displacement_vector = displacement_vector;
+      obj.displacement = displacement;
+      obj.direction = direction;
     end
 
     function node = getNode(obj)
       node = obj.node;
     end
-    function displacement_vector = getDisplacementVector(obj)
-      displacement_vector = obj.displacement_vector;
+    function displacement = getDisplacement(obj)
+      displacement = obj.displacement;
+    end
+    function direction = getDirection(obj)
+      direction = obj.direction;
     end
   end
 end

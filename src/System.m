@@ -40,10 +40,30 @@ classdef System < handle
     %* ----- GET STIFFNESS MATRIX ----- *%
     function stiffness_matrix = getSystemStiffness(obj)
       stiffness_matrix = obj.element_list.getStiffnessMatrix;
-      displacements = obj.getDisplacements;
-      if ~isempty(displacements)
-        for displacements_index=1:length(displacements)
-          current_displacement_condition = displacements(displacements_index);
+      all_displacements = obj.getDisplacements;
+      system_node_list = obj.element_list.getNodeList;
+      all_system_nodes = system_node_list.getAllNodes;
+      copied_nodes = all_system_nodes(:);
+      if ~isempty(all_displacements)
+        for displacements_index=1:length(all_displacements)
+          current_displacement_condition = all_displacements(displacements_index);
+          applied_node = current_displacement_condition.getNode;
+          applied_node_index = find(copied_nodes == applied_node);
+          full_matrix_indices = nodeListIndexToStiffnessIndices(applied_node_index);
+          full_matrix_index = full_matrix_indices(current_displacement_condition.getDirection.real);
+          stiffness_matrix(full_matrix_index, :) = [];
+          stiffness_matrix(:, full_matrix_index) = [];
+
+          remove_node = true;
+          for remaining_displacements_index = displacements_index:length(all_displacements)
+            checked_displacement = all_displacements(remaining_displacements_index);
+            if applied_node == checked_displacement.getNode
+              remove_node = false;
+            end
+          end
+          if remove_node
+            copied_nodes(applied_node_index) = [];
+          end
         end
       else
         throw(MEexception('system is not constrained, will result in rigid-body motion'));

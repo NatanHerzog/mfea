@@ -1,7 +1,7 @@
 classdef Element < handle
   properties (GetAccess = private, SetAccess = private)
-    n1 (1,1) Node = Node(0,0)
-    n2 (1,1) Node = Node(0,0)
+    n1 (1,1) Node
+    n2 (1,1) Node
     YOUNGS_MODULUS (1,1) double = 1
     SECOND_MOMENT (1,1) double = 1
     CROSS_SECTIONAL_AREA (1,1) double = 1
