@@ -3,33 +3,35 @@ clc
 
 addpath('../src')
 
-YOUNGS_MODULUS = 1e9;
-BASE = 0.25;
-HEIGHT = 0.5;
+%* ----- MATERIAL PROPERTIES ----- *%
+YOUNGS_MODULUS = 1;
+
+%* ----- GEOMETRY DEFINITIONS ----- *%
+LENGTH = 1;
+BASE = 1;
+HEIGHT = 1;
+
+%* ----- CROSS-SECTIONAL PROPERTIES ----- *%
 CROSS_SECTIONAL_AREA = BASE * HEIGHT;
 SECOND_MOMENT_OF_AREA = 1/12 * BASE * HEIGHT^3;
-LENGTH = 3;
 
+%* ----- DEFINE A LIST OF NODES ----- *%
 nodelist = NodeList;
-nodelist.addNodeByLoc(0,0);
-nodelist.addNodeByLoc(LENGTH,0);
+nodelist.addNodeByLoc(0,0);                                                               %! create a node at (0,0)
+nodelist.addNodeByLoc(LENGTH,0);                                                          %! create a node at (LENGTH,0)
 
-elementlist = ElementList(CROSS_SECTIONAL_AREA, SECOND_MOMENT_OF_AREA, YOUNGS_MODULUS);
-elementlist.linkToNodes(nodelist);
-elementlist.addElementByIndices(1,2);
+%* ----- DEFINE A LIST OF ELEMENTS ----- *%
+elementlist = ElementList(CROSS_SECTIONAL_AREA, SECOND_MOMENT_OF_AREA, YOUNGS_MODULUS);   %! initialize elements with material and cross-sectional properties defined above
+elementlist.linkToNodes(nodelist);                                                        %! link the elementlist to the nodelist
+elementlist.addElementByIndices(1,2);                                                     %! connect nodes 1 and 2 with an element
 
-elementlist.setMaterialPropertiesInBulk;
-elementlist.calculateOverallStiffness;
-elementlist.getStiffnessMatrix
+%* ----- DEFINE A SYSTEM ----- *%
+system = System(elementlist);                                                             %! initialize a system with the elementlist
 
-system = System(elementlist);
-constrain_x_displacement_left = DisplacementCondition(nodelist.getNode(1), 0, Direction.XTRANSLATION);
-constrain_y_displacement_left= DisplacementCondition(nodelist.getNode(1), 0, Direction.YTRANSLATION);
-constrain_z_rotation_left= DisplacementCondition(nodelist.getNode(1), 0, Direction.ZROTATION);
-system.addDisplacement(constrain_x_displacement_left);
-system.addDisplacement(constrain_y_displacement_left);
-system.addDisplacement(constrain_z_rotation_left);
+system.addDisplacement(nodelist.getNode(1), 0, Direction.XTRANSLATION);                   %! fix x-translation of the node at (0,0)
+system.addDisplacement(nodelist.getNode(1), 0, Direction.YTRANSLATION);                   %! fix y-translation of the node at (0,0)
+system.addDisplacement(nodelist.getNode(1), 0, Direction.ZROTATION);                      %! fix z-rotation of the node at (0,0)
 
-load_condition_right = LoadCondition(nodelist.getNode(2), [1,0,0]);
+system.addLoad(nodelist.getNode(2), [1,0,0]);                                             %! apply a load [1,0,0] of the node at (LENGTH,0)
 
-system.getSystemStiffness
+system.solve                                                                              %! solve the system!
