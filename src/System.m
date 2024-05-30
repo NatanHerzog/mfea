@@ -75,7 +75,7 @@ classdef System < handle
 
         nodal_displacements = stiffness_matrix \ load_vector';
       else
-        throw(MEexception('system is not constrained, will result in rigid-body motion'));
+        throw(MEexception('System:Solve', 'system is not constrained, will result in rigid-body motion'));
       end
     end
   end
