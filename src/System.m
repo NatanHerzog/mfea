@@ -42,8 +42,8 @@ classdef System < handle
       displacements = obj.displacements;
     end
 
-    %* ----- GET STIFFNESS MATRIX ----- *%
-    function nodal_displacements = solve(obj)
+    %* ----- SOLVE NODAL DISPLACEMENTS ----- *%
+    function all_nodal_displacements = solve_nodal_displacements(obj)
       obj.element_list.setMaterialPropertiesInBulk;
       obj.element_list.calculateOverallStiffness;
       all_displacements = obj.getDisplacements;
@@ -51,17 +51,20 @@ classdef System < handle
         stiffness_matrix = obj.element_list.getStiffnessMatrix;
         all_system_nodes = obj.element_list.getNodeList.getAllNodes;
         copied_nodes = all_system_nodes(:);
+        all_nodal_displacements = zeros(1, length(copied_nodes) * 3);
         
-        extracted_indices = uint64.empty(0,length(all_displacements));
+        fixed_indices = uint64.empty(0,length(all_displacements));
+        unfixed_indices = 1:(length(copied_nodes) * 3);
         for displacements_index = 1 : length(all_displacements)
           applied_node = all_displacements(displacements_index).getNode;
           applied_node_index = find(copied_nodes == applied_node);
           full_matrix_indices = nodeListIndexToStiffnessIndices(applied_node_index);
-          extracted_indices(displacements_index) = full_matrix_indices(all_displacements(displacements_index).getDirection.real);
+          fixed_indices(displacements_index) = full_matrix_indices(all_displacements(displacements_index).getDirection.real);
         end
+        unfixed_indices(fixed_indices) = [];
 
         all_loads = obj.getLoads;
-        load_vector = zeros(length(all_loads), 1);
+        load_vector = zeros(length(copied_nodes) * 3, 1);
         for load_index = 1 : length(all_loads)
           applied_node = all_loads(load_index).getNode;
           applied_node_index = find(copied_nodes == applied_node);
@@ -69,14 +72,20 @@ classdef System < handle
           load_vector(full_matrix_indices) = all_loads(load_index).getLoadVector;
         end
 
-        load_vector(extracted_indices) = [];
-        stiffness_matrix(extracted_indices, :) = [];
-        stiffness_matrix(:, extracted_indices) = [];
+        load_vector(fixed_indices) = [];
+        stiffness_matrix(fixed_indices, :) = [];
+        stiffness_matrix(:, fixed_indices) = [];
 
-        nodal_displacements = stiffness_matrix \ load_vector';
+        nodal_displacements = stiffness_matrix \ load_vector;
+        all_nodal_displacements(unfixed_indices) = nodal_displacements;
       else
-        throw(MEexception('System:Solve', 'system is not constrained, will result in rigid-body motion'));
+        throw(MException('System:Solve', 'system is not constrained, will result in rigid-body motion'));
       end
+    end
+
+    %* ----- SOLVE ----- *%
+    function soln = solve(obj)
+      soln = obj.solve_nodal_displacements;
     end
   end
 end

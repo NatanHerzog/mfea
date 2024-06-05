@@ -4,12 +4,12 @@ clc
 addpath('../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
-YOUNGS_MODULUS = 1;
+YOUNGS_MODULUS = 30e6;
 
 %* ----- GEOMETRY DEFINITIONS ----- *%
-LENGTH = 1;
-BASE = 1;
-HEIGHT = 1;
+LENGTH = 15;
+BASE = 3;
+HEIGHT = 4;
 
 %* ----- CROSS-SECTIONAL PROPERTIES ----- *%
 CROSS_SECTIONAL_AREA = BASE * HEIGHT;
