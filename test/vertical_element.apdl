@@ -3,14 +3,11 @@
 
 !* ----- MODEL PARAMETERS ----- *!
 YOUNGS_MODULUS = 30e6
-LOAD = 1
 
 !* ----- GEOMETRY DEFINITIONS ----- *!
-LENGTH = 10
-ANGLE = 60
-HEIGHT = 4.330127018922193
-CROSS_SECTION_BASE = 3/8
-CROSS_SECTION_HEIGHT = 3/8
+LENGTH = 15
+BASE = 3
+HEIGHT = 4
 
 !* ------------------------------------------------------------ *!
 
@@ -21,43 +18,30 @@ ET,1,BEAM188,0,,0,1             !! beam element type :  [0] 6 DOF,
                                 !!                      [1] flexure related shear stress output
                                 ! -------------------------------------------------------------- !
 SECTYPE,1,BEAM,RECT             !! section type :       [BEAM] beam section
-                                !!                      [RECT] rectangular cross-section
+                                !!                      [RECT] rectanngular cross-section
                                 ! -------------------------------------------------------------- !
-SECDATA,CROSS_SECTION_BASE,CROSS_SECTION_HEIGHT             !! section data :       [1] base
-                                                            !!                      [2] height
+SECDATA,BASE,HEIGHT             !! section data :       [1] base
+                                !!                      [2] height
                                 ! -------------------------------------------------------------- !
 MP,EX,1,YOUNGS_MODULUS          !! material property :  [EX] specify young's modulus in x
                                 !!                      [1] reference number for this property
                                 !!                      [YOUNGS_MODULUS] value of EX
-MP,EY,1,YOUNGS_MODULUS
-MP,EZ,1,YOUNGS_MODULUS
 
 !* ----- Model Geometry ----- *!
 K,1,0,0                         !! keypoint 1 is located at (0,0)
-K,2,LENGTH/2,0                  
-K,3,LENGTH,0
-K,4,LENGTH/4,HEIGHT
-K,5,3*LENGTH/4, HEIGHT
-
+K,2,0,LENGTH                    !! keypoint 2 is located at (LENGTH, 0)
 L,1,2                           !! define a line between keypoints 1 -> 2
-L,2,3
-L,1,4
-L,2,4
-L,2,5
-L,3,5
-L,4,5
 
 !* ----- Mesh ----- *!
 TYPE,1                          !! declare that we are working with element type 1
 MAT,1                           !! declare that we are working with material 1
 SECNUM,1                        !! declare that we are working with section type 1
-ESIZE,LENGTH/2                  !! specify the mesh size
+ESIZE,LENGTH                    !! specify the mesh size
 LMESH,ALL                       !! mesh all lines in the model geometry (only one line for this)
 
 !* ----- Boundary Conditions ----- *!
 N_PIN = NODE(0,0,0)             !! node reference for the pinned end
-N_ROLLER = NODE(LENGTH,0,0)
-D,N_PIN,UX,0,,,,UY,UZ,ROTX,ROTY !! boundary condition : [N_PIN] BC located at the pinned node
+D,N_PIN,ALL                     !! boundary condition : [N_PIN] BC located at the pinned node
                                 !!                      [UX] BC applies to translation in x
                                 !!                      [0] set translation in x to 0
                                 !!                      []  skip, no need for another value
@@ -68,19 +52,10 @@ D,N_PIN,UX,0,,,,UY,UZ,ROTX,ROTY !! boundary condition : [N_PIN] BC located at th
                                 !!                      [ROTX] apply 0 rotation around the x-axis
                                 !!                      [ROTY] apply 0 rotation around the y-axis
                                 ! -------------------------------------------------------------- !
-D,N_ROLLER,UY,0,,,,UZ,ROTX,ROTY !! boundary condition : [N_ROLLER] BC located at the roller node
-                                !!                      [UY] BC applies to translation in y
-                                !!                      [0] set translation in x to 0
-                                !!                      []  skip, no need for another value
-                                !!                      []  skip, not applying to any more nodes
-                                !!                      []  skip, not applying to any more nodes
-                                !!                      [UZ] apply 0 translation in z
-                                !!                      [ROTX] apply 0 rotation around the x-axis
-                                !!                      [ROTY] apply 0 rotation around the y-axis
-                                ! -------------------------------------------------------------- !
+
 !* ----- Apply a Load ----- *!
-N_LOAD = NODE(LENGTH/2,0,0)     !! node reference for the loaded end
-F,N_LOAD,FY,-LOAD               !! apply the concentrated load
+N_END = NODE(0,LENGTH,0)        !! node reference for the loaded end
+F,N_END,FY,1                    !! apply the concentrated load
 
 FINISH
 

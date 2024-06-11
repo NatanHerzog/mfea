@@ -62,8 +62,17 @@ FINISH
 !* ----- Solution ----- *!
 /solu                           !! enter the solver
 SOLVE                           !! perform the solution
-
+wrfull,1
 FINISH
+
+/aux2
+combine, full
+finish
+
+! Gets Stiffness Matrix
+*SMAT, MatK, D, import, full, file.full, stiff
+*print, MatK, matk.txt   ! Exports Stiffness to Text File
+*export, MatK, mmf, matkMMF.txt ! Exports Stiffness as MMF format
 
 !* ----- Plot Results ----- *!
 /POST1                          !! enter the postprocessor
