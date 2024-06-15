@@ -1,0 +1,85 @@
+/CLEAR
+/PREP7
+
+!* ----- MODEL PARAMETERS ----- *!
+YOUNGS_MODULUS = 1
+
+!* ----- GEOMETRY DEFINITIONS ----- *!
+LENGTH = 1
+BASE = 1
+HEIGHT = 1
+
+!* ------------------------------------------------------------ *!
+
+!* ----- Element Definitions and Properties ----- *!
+ET,1,BEAM188,0,,0,1,1           !! beam element type :  [0] 6 DOF per node,
+                                !!                      [] skip, did not enable NLGEOM
+                                !!                      [0] Linear SF,
+                                !!                      [1] flexure related shear stress output
+                                !!                      [1] deformation in XY plane
+                                ! -------------------------------------------------------------- !
+SECTYPE,1,BEAM,RECT             !! section type :       [BEAM] beam section
+                                !!                      [RECT] rectanngular cross-section
+                                ! -------------------------------------------------------------- !
+SECDATA,BASE,HEIGHT,1,1         !! section data :       [1] base
+                                !!                      [2] height
+                                !!                      [1] 1 cell along width
+                                !!                      [1] 1 cell along height
+                                ! -------------------------------------------------------------- !
+MP,EX,1,YOUNGS_MODULUS          !! material property :  [EX] specify young's modulus in x
+                                !!                      [1] reference number for this property
+                                !!                      [YOUNGS_MODULUS] value of EX
+MP,EY,1,YOUNGS_MODULUS          !! material property :  [EY] specify young's modulus in x
+                                !!                      [1] reference number for this property
+                                !!                      [YOUNGS_MODULUS] value of EY
+MP,GXY,1,1                      !! material property :  [GXY] specify shear modulus in xy
+                                !!                      [1] reference number for this property
+                                !!                      [1] value of GXY
+
+!* ----- Model Geometry ----- *!
+K,1,0,0                         !! keypoint 1 is located at (0,0)
+K,2,LENGTH,0                    !! keypoint 2 is located at (LENGTH, 0)
+L,1,2                           !! define a line between keypoints 1 -> 2
+
+!* ----- Mesh ----- *!
+TYPE,1                          !! declare that we are working with element type 1
+MAT,1                           !! declare that we are working with material 1
+SECNUM,1                        !! declare that we are working with section type 1
+ESIZE,LENGTH                    !! specify the mesh size
+LMESH,ALL                       !! mesh all lines in the model geometry (only one line for this)
+
+!* ----- Boundary Conditions ----- *!
+N_PIN = NODE(0,0,0)             !! node reference for the pinned end
+D,N_PIN,UX,0,,,,UY,ROTZ         !! boundary condition : [N_PIN] BC located at the pinned node
+                                !!                      [UX] BC applies to translation in x
+                                !!                      [0] set translation in x to 0
+                                !!                      []  skip, no need for another value
+                                !!                      []  skip, not applying to any more nodes
+                                !!                      []  skip, not applying to any more nodes
+                                !!                      [UY] apply 0 translation in y
+                                !!                      [ROTZ] apply 0 rotation around z
+                                ! -------------------------------------------------------------- !
+
+!* ----- Apply a Load ----- *!
+N_END = NODE(LENGTH,0,0)        !! node reference for the loaded end
+F,N_END,FX,1                    !! apply the concentrated load
+
+FINISH
+
+!* ----- Solution ----- *!
+/solu                           !! enter the solver
+SOLVE                           !! perform the solution
+! wrfull,1
+FINISH
+
+! /aux2
+! combine, full
+! finish
+
+! Gets Stiffness Matrix
+*SMAT, MatK, D, import, full, file.full, stiff
+*print, MatK, post_solve_horiz.txt
+
+!* ----- Plot Results ----- *!
+/POST1                          !! enter the postprocessor
+PLDISP,1                        !! plot the deformed results with undeformed elements shown

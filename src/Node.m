@@ -2,6 +2,7 @@ classdef Node < handle
   properties (GetAccess = private, SetAccess = private)
     x (1,1) double = 0;
     y (1,1) double = 0;
+    phi (1,1) double = 0;
   end
 
   methods
@@ -16,6 +17,10 @@ classdef Node < handle
     function y = getY(obj)
       y = obj.y;
     end
+    function phi = getPhi(obj)
+      phi = obj.phi;
+    end
+    
 
     %* ----- SETTER METHODS ----- *%
     function setX(obj, x)
@@ -31,6 +36,13 @@ classdef Node < handle
         y (1,1) double
       end
       obj.y = y;
+    end
+    function setPhi(obj, phi)
+      arguments
+        obj Node
+        phi (1,1) double
+      end
+      obj.phi = phi;
     end
 
     %* ----- COPY METHOD ----- *%

@@ -40,5 +40,12 @@ classdef NodeList < handle
       end
       obj.nodes = [obj.nodes, n];
     end
+
+    function copied_nodes = copy(obj)
+      copied_nodes = Node.empty(0, length(obj.nodes));
+      for i = 1 : length(obj.nodes)
+        copied_nodes(i) = obj.nodes(i).copy;
+      end
+    end
   end
 end

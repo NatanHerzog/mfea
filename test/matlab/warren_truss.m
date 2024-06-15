@@ -2,7 +2,7 @@ clear all
 clc
 format long
 
-addpath('../src')
+addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
 YOUNGS_MODULUS = 30e6;

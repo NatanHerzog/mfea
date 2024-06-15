@@ -1,7 +1,7 @@
 clear all
 clc
 
-addpath('../src')
+addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
 YOUNGS_MODULUS = 30e6;
@@ -18,7 +18,7 @@ SECOND_MOMENT_OF_AREA = 1/12 * BASE * HEIGHT^3;
 %* ----- DEFINE A LIST OF NODES ----- *%
 nodelist = NodeList;
 nodelist.addNodeByLoc(0,0);                                                               %! create a node at (0,0)
-nodelist.addNodeByLoc(0,LENGTH);                                                          %! create a node at (LENGTH,0)
+nodelist.addNodeByLoc(LENGTH,LENGTH);                                                          %! create a node at (LENGTH,0)
 
 %* ----- DEFINE A LIST OF ELEMENTS ----- *%
 elementlist = ElementList(CROSS_SECTIONAL_AREA, SECOND_MOMENT_OF_AREA, YOUNGS_MODULUS);   %! initialize elements with material and cross-sectional properties defined above
@@ -32,7 +32,7 @@ system.addDisplacement(nodelist.getNode(1), 0, Direction.XTRANSLATION);         
 system.addDisplacement(nodelist.getNode(1), 0, Direction.YTRANSLATION);                   %! fix y-translation of the node at (0,0)
 system.addDisplacement(nodelist.getNode(1), 0, Direction.ZROTATION);                      %! fix z-rotation of the node at (0,0)
 
-system.addLoad(nodelist.getNode(2), [0,1,0]);                                             %! apply a load [1,0,0] of the node at (LENGTH,0)
+system.addLoad(nodelist.getNode(2), [1,1,0]);                                             %! apply a load [1,0,0] of the node at (LENGTH,0)
 
 system.solve                                                                              %! solve the system!
 elementlist.calculateOverallStiffness

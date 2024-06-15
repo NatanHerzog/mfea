@@ -121,8 +121,8 @@ classdef ElementList < handle
         index_n2_in_node_list = find(nodes == current_element_nodes(2));
         all_stiffness_indices = [nodeListIndexToStiffnessIndices(index_n1_in_node_list),...
                                  nodeListIndexToStiffnessIndices(index_n2_in_node_list)];
-        K(all_stiffness_indices, all_stiffness_indices) = K(all_stiffness_indices, all_stiffness_indices) + ...
-          current_element.getElementTransformation * current_element.getElementStiffness * transpose(current_element.getElementTransformation);
+        T = current_element.getElementTransformation;
+        K(all_stiffness_indices, all_stiffness_indices) = K(all_stiffness_indices, all_stiffness_indices) + T * current_element.getElementStiffness * transpose(T);
       end
       obj.stiffness_matrix = K;
     end

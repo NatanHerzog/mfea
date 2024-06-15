@@ -12,24 +12,30 @@ HEIGHT = 4
 !* ------------------------------------------------------------ *!
 
 !* ----- Element Definitions and Properties ----- *!
-ET,1,BEAM188,0,,0,1             !! beam element type :  [0] 6 DOF,
+ET,1,BEAM188,0,1,0,1,1          !! beam element type :  [0] 6 DOF per node,
                                 !!                      []  skip, no NLGEOM,
                                 !!                      [0] Linear SF,
                                 !!                      [1] flexure related shear stress output
+                                !!                      [1] deformation in XY plane
                                 ! -------------------------------------------------------------- !
 SECTYPE,1,BEAM,RECT             !! section type :       [BEAM] beam section
                                 !!                      [RECT] rectanngular cross-section
                                 ! -------------------------------------------------------------- !
-SECDATA,BASE,HEIGHT             !! section data :       [1] base
+SECDATA,BASE,HEIGHT,1,1         !! section data :       [1] base
                                 !!                      [2] height
+                                !!                      [1] 1 cell along width
+                                !!                      [1] 1 cell along height
                                 ! -------------------------------------------------------------- !
 MP,EX,1,YOUNGS_MODULUS          !! material property :  [EX] specify young's modulus in x
+                                !!                      [1] reference number for this property
+                                !!                      [YOUNGS_MODULUS] value of EX
+MP,EY,1,YOUNGS_MODULUS          !! material property :  [EX] specify young's modulus in x
                                 !!                      [1] reference number for this property
                                 !!                      [YOUNGS_MODULUS] value of EX
 
 !* ----- Model Geometry ----- *!
 K,1,0,0                         !! keypoint 1 is located at (0,0)
-K,2,LENGTH,0                    !! keypoint 2 is located at (LENGTH, 0)
+K,2,LENGTH,LENGTH               !! keypoint 2 is located at (LENGTH, LENGTH)
 L,1,2                           !! define a line between keypoints 1 -> 2
 
 !* ----- Mesh ----- *!
@@ -56,6 +62,7 @@ D,N_PIN,ALL                     !! boundary condition : [N_PIN] BC located at th
 !* ----- Apply a Load ----- *!
 N_END = NODE(LENGTH,0,0)        !! node reference for the loaded end
 F,N_END,FX,1                    !! apply the concentrated load
+F,N_END,FY,1                    !! apply the concentrated load
 
 FINISH
 
