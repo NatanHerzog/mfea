@@ -3,6 +3,8 @@ classdef System < handle
     element_list ElementList
     loads (1,:) LoadCondition
     displacements (1,:) DisplacementCondition
+
+    nodal_solution (1,:) double
   end
 
   methods
@@ -58,12 +60,16 @@ classdef System < handle
       end
     end
 
-    function global_load_vector = compileGlobalLoadVector(obj)
+    function global_load_vector = compileGlobalLoadVector(obj, nodes)
+      arguments
+        obj System
+        nodes (1,:) Node
+      end
       all_loads = obj.getLoads;
-      global_load_vector = zeros(length(copied_nodes) * 3, 1);
+      global_load_vector = zeros(length(nodes) * 3, 1);
       for load_index = 1 : length(all_loads)
         applied_node = all_loads(load_index).getNode;
-        applied_node_index = find(copied_nodes == applied_node);
+        applied_node_index = find(nodes == applied_node);
         full_matrix_indices = nodeListIndexToStiffnessIndices(applied_node_index);
         global_load_vector(full_matrix_indices) = all_loads(load_index).getLoadVector;
       end
@@ -82,7 +88,7 @@ classdef System < handle
         constrained_stiffness_matrix_indices = obj.constrainedStiffnessMatrixIndices(all_system_nodes, length(all_displacements));
         unfixed_indices(constrained_stiffness_matrix_indices) = [];
 
-        global_load_vector = obj.compileGlobalLoadVector;
+        global_load_vector = obj.compileGlobalLoadVector(all_system_nodes);
         global_load_vector(constrained_stiffness_matrix_indices) = [];
 
         stiffness_matrix = obj.element_list.getStiffnessMatrix;
@@ -94,17 +100,35 @@ classdef System < handle
       else
         throw(MException('System:Solve', 'system is not constrained, will result in rigid-body motion'));
       end
+
+      obj.nodal_solution = all_nodal_displacements;
     end
 
     %* ----- SOLVE ----- *%
     function soln = solve(obj)
       soln = obj.solveNodalDisplacements;
-      copied_nodes = Node.empty(0, obj.element_list.getNodeList.len);
+    end
+
+    %* ----- PLOT ----- *%
+    function plotUndeformedSystem(obj)
+      obj.element_list.plotElements('o--b');
+    end
+    function plotDeformedSystem(obj)
+      soln = obj.nodal_solution;
+      displaced_nodelist = NodeList;
       for i = 1 : obj.element_list.getNodeList.len
         full_matrix_indices = nodeListIndexToStiffnessIndices(i);
-        current_nodal_displacements = soln(full_matrix_indices);
-        copied_nodes(i).setX(current_nodal_displacements(1)).setY(current_nodal_displacements(2)).setPhi(current_nodal_displacements(3));
+        current_node_displacements = soln(full_matrix_indices);
+        displaced_nodelist.addNodeByLoc(obj.element_list.getNodeList.getNode(i).getX + current_node_displacements(1), obj.element_list.getNodeList.getNode(i).getY + current_node_displacements(2));
+        displaced_nodelist.getNode(i).setPhi(current_node_displacements(3));
       end
+      new_element_list = obj.element_list.copyWithNewNodes(displaced_nodelist);
+      new_element_list.plotElements('x:r');
+    end
+    function plotSystem(obj)
+      figure
+      obj.plotUndeformedSystem;
+      obj.plotDeformedSystem;
     end
   end
 end

@@ -45,6 +45,11 @@ classdef Node < handle
       obj.phi = phi;
     end
 
+    %* ----- PLOT NODE ----- *%
+    function plotNode(obj)
+      plot(obj.getX, obj.getY);
+    end
+
     %* ----- COPY METHOD ----- *%
     function new_node = copy(obj)
       new_node = Node(obj.getX, obj.getY);

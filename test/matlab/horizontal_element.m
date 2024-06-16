@@ -32,7 +32,8 @@ system.addDisplacement(nodelist.getNode(1), 0, Direction.XTRANSLATION);         
 system.addDisplacement(nodelist.getNode(1), 0, Direction.YTRANSLATION);                   %! fix y-translation of the node at (0,0)
 system.addDisplacement(nodelist.getNode(1), 0, Direction.ZROTATION);                      %! fix z-rotation of the node at (0,0)
 
-system.addLoad(nodelist.getNode(2), [0,1,0]);                                             %! apply a load [1,0,0] of the node at (LENGTH,0)
+system.addLoad(nodelist.getNode(2), [1,0,0]);                                             %! apply a load [1,0,0] of the node at (LENGTH,0)
 
 system.solve                                                                              %! solve the system!
 elementlist.calculateOverallStiffness
+system.plotSystem

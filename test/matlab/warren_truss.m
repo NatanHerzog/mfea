@@ -6,7 +6,7 @@ addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
 YOUNGS_MODULUS = 30e6;
-LOAD = [0,-1,0];
+LOAD = [0,-100000,0];
 
 %* ----- GEOMETRY DEFINITIONS ----- *%
 LENGTH = 10;
@@ -39,7 +39,7 @@ elementlist.addElementByIndices(3,5);
 elementlist.addElementByIndices(4,5);
 
 %* ----- DEFINE A SYSTEM ----- *%
-system = System(elementlist);                                                             %! initialize a system with the elementlist
+system = System(elementlist);   %! initialize a system with the elementlist
 
 system.addDisplacement(nodelist.getNode(1), 0, Direction.XTRANSLATION);
 system.addDisplacement(nodelist.getNode(1), 0, Direction.YTRANSLATION);
@@ -50,3 +50,4 @@ system.addLoad(nodelist.getNode(2), LOAD);
 
 system.solve                                                                              %! solve the system!
 elementlist.calculateOverallStiffness
+system.plotSystem

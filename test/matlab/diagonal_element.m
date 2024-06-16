@@ -4,12 +4,12 @@ clc
 addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
-YOUNGS_MODULUS = 30e6;
+YOUNGS_MODULUS = 1;
 
 %* ----- GEOMETRY DEFINITIONS ----- *%
-LENGTH = 15;
-BASE = 3;
-HEIGHT = 4;
+LENGTH = 1;
+BASE = 1;
+HEIGHT = 1;
 
 %* ----- CROSS-SECTIONAL PROPERTIES ----- *%
 CROSS_SECTIONAL_AREA = BASE * HEIGHT;
@@ -36,3 +36,4 @@ system.addLoad(nodelist.getNode(2), [1,1,0]);                                   
 
 system.solve                                                                              %! solve the system!
 elementlist.calculateOverallStiffness
+system.plotSystem

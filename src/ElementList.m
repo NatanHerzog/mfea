@@ -31,6 +31,24 @@ classdef ElementList < handle
       obj.nodes_list = nl;
     end
 
+    %* ----- COPY WITH NEW NODES ----- *%
+    function newElementList = copyWithNewNodes(obj, nodeslist)
+      arguments
+        obj ElementList
+        nodeslist NodeList
+      end
+      newElementList = ElementList(obj.CROSS_SECTIONAL_AREA, obj.SECOND_MOMENT_OF_AREA, obj.YOUNGS_MODULUS);
+      newElementList.linkToNodes(nodeslist);
+      obj.len
+      for i = 1 : obj.len
+        node_one_index = find(obj.getNodeList.getAllNodes == obj.getElementByIndex(i).getNodeOne);
+        node_two_index = find(obj.getNodeList.getAllNodes == obj.getElementByIndex(i).getNodeTwo);
+        newElementList.addElementByIndices(node_one_index, node_two_index);
+        newElementList.getElementByIndex(i).getNodeOne.getX
+        newElementList.getElementByIndex(i).getNodeOne.getY
+      end
+    end
+
     %* ----- ACCESSOR ----- *%
     function elements = getElementList(obj)
       elements = obj.elements;
@@ -125,6 +143,20 @@ classdef ElementList < handle
         K(all_stiffness_indices, all_stiffness_indices) = K(all_stiffness_indices, all_stiffness_indices) + T * current_element.getElementStiffness * transpose(T);
       end
       obj.stiffness_matrix = K;
+    end
+
+    %* ----- VISUALIZE SYSTEM ----- *%
+    function plotElements(obj, specs)
+      arguments
+        obj ElementList
+        specs char
+      end
+      daspect([1,1,1])
+      hold on
+      for i = 1 : length(obj.elements)
+        endpoints = obj.elements(i).getEndpoints;
+        plot(endpoints(:,1), endpoints(:,2), specs);
+      end
     end
   end
 end
