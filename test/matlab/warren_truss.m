@@ -5,11 +5,11 @@ format long
 addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
-YOUNGS_MODULUS = 30e6;
-LOAD = [0,-100000,0];
+YOUNGS_MODULUS = 0.54e6;
+LOAD = [0,-450,0];
 
 %* ----- GEOMETRY DEFINITIONS ----- *%
-LENGTH = 10;
+LENGTH = 18;
 ANGLE = 60;
 HEIGHT = (LENGTH / 4) * tand(ANGLE);
 CROSS_SECTION_BASE = 3/8;
@@ -49,5 +49,4 @@ system.addDisplacement(nodelist.getNode(3), 0, Direction.YTRANSLATION);
 system.addLoad(nodelist.getNode(2), LOAD);
 
 system.solve                                                                              %! solve the system!
-elementlist.calculateOverallStiffness
 system.plotSystem
