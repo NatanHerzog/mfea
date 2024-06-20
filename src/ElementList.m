@@ -88,6 +88,15 @@ classdef ElementList < handle
       obj.addElementByNodes(nodes(index_n1), nodes(index_n2));
     end
 
+    function A = getCrossSectionalArea(obj)
+      A = obj.CROSS_SECTIONAL_AREA;
+    end
+    function I = getSecondMoment(obj)
+      I = obj.SECOND_MOMENT_OF_AREA;
+    end
+    function E = getYoungsModulus(obj)
+      E = obj.YOUNGS_MODULUS;
+    end
     %* ----- SET ELEMENT PROPERTIES IN BULK ----- *%
     function setMaterialPropertiesInBulk(obj)
       obj.setCrossSectionalArea(obj.CROSS_SECTIONAL_AREA);

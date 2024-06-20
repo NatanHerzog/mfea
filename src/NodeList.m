@@ -40,6 +40,11 @@ classdef NodeList < handle
       end
       obj.nodes = [obj.nodes, n];
     end
+    function makeUnique(obj)
+      all_nodes = obj.nodes;
+      all_nodes = unique(all_nodes, 'stable');
+      obj.nodes = all_nodes;
+    end
 
     function copied_nodes = copy(obj)
       copied_nodes = Node.empty(0, length(obj.nodes));

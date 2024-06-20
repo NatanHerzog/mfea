@@ -1,12 +1,12 @@
 clear all
+close all
 clc
-format long
 
 addpath('../../src')
 
 %* ----- MATERIAL PROPERTIES ----- *%
 YOUNGS_MODULUS = 0.54e6;
-LOAD = [0,-450,0];
+LOAD = [0,-5000,0];
 
 %* ----- GEOMETRY DEFINITIONS ----- *%
 LENGTH = 18;
@@ -48,5 +48,7 @@ system.addDisplacement(nodelist.getNode(3), 0, Direction.YTRANSLATION);
 
 system.addLoad(nodelist.getNode(2), LOAD);
 
-system.solve                                                                              %! solve the system!
+system.meshModel(MeshingType.NUM_SUBDIVISIONS, 50);
+
+system.solve;
 system.plotSystem

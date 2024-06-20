@@ -66,6 +66,11 @@ classdef Element < handle
       endpoints = [obj.getNodeOne.getX, obj.getNodeOne.getY;...
                   obj.getNodeTwo.getX, obj.getNodeTwo.getY];
     end
+    function direction = getElementDirection(obj)
+      endpoints = obj.getEndpoints;
+      direction = [endpoints(2,1) - endpoints(1,1), endpoints(2,2) - endpoints(1,2)];
+      direction = direction ./ norm(direction);
+    end
     function l = getElementLength(obj)
       endpoints = obj.getEndpoints;
       l = sqrt((endpoints(2,1) - endpoints(1,1))^2 + (endpoints(2,2) - endpoints(1,2))^2);

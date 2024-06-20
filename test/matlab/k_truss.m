@@ -1,4 +1,5 @@
 clear all
+close all
 clc
 format long
 
@@ -103,5 +104,7 @@ system.addLoad(nodelist.getNode(8), LOAD./5);
 system.addLoad(nodelist.getNode(10), LOAD./5);
 system.addLoad(nodelist.getNode(13), LOAD./5);
 
-system.solve                                                                              %! solve the system!
+system.meshModel(MeshingType.NUM_SUBDIVISIONS, 50);
+
+system.solve;
 system.plotSystem
