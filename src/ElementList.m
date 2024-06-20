@@ -39,13 +39,12 @@ classdef ElementList < handle
       end
       newElementList = ElementList(obj.CROSS_SECTIONAL_AREA, obj.SECOND_MOMENT_OF_AREA, obj.YOUNGS_MODULUS);
       newElementList.linkToNodes(nodeslist);
-      obj.len
       for i = 1 : obj.len
         node_one_index = find(obj.getNodeList.getAllNodes == obj.getElementByIndex(i).getNodeOne);
         node_two_index = find(obj.getNodeList.getAllNodes == obj.getElementByIndex(i).getNodeTwo);
         newElementList.addElementByIndices(node_one_index, node_two_index);
-        newElementList.getElementByIndex(i).getNodeOne.getX
-        newElementList.getElementByIndex(i).getNodeOne.getY
+        newElementList.getElementByIndex(i).getNodeOne.getX;
+        newElementList.getElementByIndex(i).getNodeOne.getY;
       end
     end
 
@@ -155,7 +154,7 @@ classdef ElementList < handle
       hold on
       for i = 1 : length(obj.elements)
         endpoints = obj.elements(i).getEndpoints;
-        plot(endpoints(:,1), endpoints(:,2), specs);
+        plot(endpoints(:,1), endpoints(:,2), specs, 'LineWidth', 2);
       end
     end
   end
