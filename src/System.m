@@ -189,22 +189,22 @@ classdef System < handle
     function plotUndeformedSystem(obj)
       obj.element_list.plotElements('o--b');
     end
-    function plotDeformedSystem(obj)
+    function plotDeformedSystem(obj, s)
       soln = obj.nodal_solution;
       displaced_nodelist = NodeList;
       for i = 1 : obj.meshed_element_list.getNodeList.len
         full_matrix_indices = nodeListIndexToStiffnessIndices(i);
         current_node_displacements = soln(full_matrix_indices);
-        displaced_nodelist.addNodeByLoc(obj.meshed_element_list.getNodeList.getNode(i).getX + current_node_displacements(1), obj.meshed_element_list.getNodeList.getNode(i).getY + current_node_displacements(2));
+        displaced_nodelist.addNodeByLoc( obj.meshed_element_list.getNodeList.getNode(i).getX + current_node_displacements(1) * s, obj.meshed_element_list.getNodeList.getNode(i).getY + current_node_displacements(2) * s);
         displaced_nodelist.getNode(i).setPhi(current_node_displacements(3));
       end
       new_element_list = obj.meshed_element_list.copyWithNewNodes(displaced_nodelist);
       new_element_list.plotElements(':r');
     end
-    function plotSystem(obj)
+    function plotSystem(obj, s)
       figure
       obj.plotUndeformedSystem;
-      obj.plotDeformedSystem;
+      obj.plotDeformedSystem(s);
     end
   end
 end

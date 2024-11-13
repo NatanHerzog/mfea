@@ -104,7 +104,7 @@ system.addLoad(nodelist.getNode(8), LOAD./5);
 system.addLoad(nodelist.getNode(10), LOAD./5);
 system.addLoad(nodelist.getNode(13), LOAD./5);
 
-system.meshModel(MeshingType.NUM_SUBDIVISIONS, 50);
+system.meshModel(MeshingType.NUM_SUBDIVISIONS, 1);
 
 system.solve;
 system.plotSystem
